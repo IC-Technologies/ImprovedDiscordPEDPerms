@@ -69,7 +69,7 @@ function DisplayNotification( text )
 	if Config.usingTnotify then
 		exports['t-notify']:Alert({
 			style = 'error',
-			message = Config.RestrictedMessage
+			message = text
 		})
 	else
 		SetNotificationTextEntry( "STRING" )

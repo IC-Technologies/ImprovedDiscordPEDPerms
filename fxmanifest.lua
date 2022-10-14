@@ -4,18 +4,20 @@
 -------------------------------
 
 fx_version 'cerulean'
-games { 'gta5' }
+game 'gta5'
 
 author 'IC-Technologies --> Original script by JaredScar on GitHub'
 description 'ImprovedDiscordPEDPerms by IC-Technologies on Github'
-version '1.0.0'
+version '1.0.1'
+
+shared_script {
+  "config.lua"
+}
 
 client_scripts { 
-  "config.lua",
   "client.lua"
 }
 
 server_scripts {
-  "config.lua",
   "server.lua"
 }

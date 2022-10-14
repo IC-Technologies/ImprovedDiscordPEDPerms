@@ -1,72 +1,79 @@
------------------------
---- DiscordPedPerms ---
------------------------
-restrictedPeds = {
-{}, -- Trusted Civ (1)
-{}, -- Donator (2)
-{
-"mickeymouse",
-"deadpool",
-"kermit",
-"blackpanther",
-}, -- Personal (3)
-}
-allowedPed = "xxxtentacion"
-alreadyRan = false
-isAllowed = {}
-RegisterNetEvent('DiscordPedPerms:CheckPerms:Return')
-AddEventHandler('DiscordPedPerms:CheckPerms:Return', function(hasPerms)
-	isAllowed = hasPerms
+-------------------------------
+--- ImprovedDiscordPedPerms ---
+--------IC-Technologies--------
+-------------------------------
+
+restrictedPeds = Config.PEDRestrictions;
+myRoles = nil;
+
+RegisterNetEvent('ImprovedDiscordPEDPerms:CheckPerms:Return')
+AddEventHandler('ImprovedDiscordPEDPerms:CheckPerms:Return', function(roles)
+	myRoles = roles;
 end)
-function has_value (tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-    return false
-end
+
 Citizen.CreateThread(function()
+	TriggerServerEvent('ImprovedDiscordPEDPerms:CheckPerms')
     while true do
         Citizen.Wait(2000)
-		local ped = GetPlayerPed(-1)
-		local modelhashed = GetHashKey(allowedPed)
-    
+		local PlayerPED = PlayerPedId()
+
+		local modelhashed = GetHashKey(Config.defaultPED)
+
         -- Request the model, and wait further triggering untill fully loaded.
 	    RequestModel(modelhashed)
 	    while not HasModelLoaded(modelhashed) do 
 	    	RequestModel(modelhashed)
 	    	Citizen.Wait(0)
 	    end
-		if not alreadyRan then
-			TriggerServerEvent('DiscordPedPerms:CheckPerms')
-			alreadyRan = true
-		end
-		for i = 1, #restrictedPeds do
-			for j = 1, #restrictedPeds[i] do
-				if IsPedModel(ped, GetHashKey(tostring(restrictedPeds[i][j]))) then
-					-- They can't use that ped
-					if not has_value(isAllowed, i) then
-						SetPlayerModel(PlayerId(), modelhashed)
-						SetModelAsNoLongerNeeded(modelHashed)
-						DisplayNotification('~r~RESTRICTED PED')
+
+		local requiredPerm = nil;
+		hasPerm = false;
+
+		for role, val in pairs(myRoles) do
+			if (val == true) then
+				local PEDs = Config.PEDRestrictions[role];
+				if (PEDs ~= nil) then
+					for i = 1, #PEDs do
+						if IsPedModel(PlayerPED, GetHashKey(tostring(PEDs[i]))) then
+							requiredPerm = true;
+							hasPerm = true;
+						end
 					end
 				end
 			end
-		--[[
-			if IsPedModel(ped, GetHashKey(restrictedPeds[i])) then
-				-- They can't use that ped
-				SetPlayerModel(PlayerId(), modelhashed)
-				SetModelAsNoLongerNeeded(modelHashed)
-				DisplayNotification('~r~RESTRICTED PED')
+		end
+
+		if not hasPerm then
+			local PEDs = Config.PEDRestrictions;
+			for role, PEDList in pairs(PEDs) do
+				for i = 1, #PEDList do
+					if IsPedModel(PlayerPED, GetHashKey(tostring(PEDList[i]))) then
+						requiredPerm = true;
+					end
+				end
 			end
-			--]]--
+		end
+
+		-- If doesn't have permission, it's a restricted PED to them
+		if not hasPerm and (requiredPerm ~=nil) then
+			SetPlayerModel(PlayerId(), modelhashed)
+			SetModelAsNoLongerNeeded(modelHashed)
+			DisplayNotification(Config.RestrictedMessage)
+		else
+			hasPerm = true;
 		end
 	end
 end)
 
 function DisplayNotification( text )
-    SetNotificationTextEntry( "STRING" )
-    AddTextComponentString( text )
-    DrawNotification( false, false )
+	if Config.usingTnotify then
+		exports['t-notify']:Alert({
+			style = 'error',
+			message = Config.RestrictedMessage
+		})
+	else
+		SetNotificationTextEntry( "STRING" )
+		AddTextComponentString( text )
+		DrawNotification( false, false )
+	end
 end

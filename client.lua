@@ -14,7 +14,7 @@ end)
 Citizen.CreateThread(function()
 	TriggerServerEvent('ImprovedDiscordPEDPerms:CheckPerms')
     while true do
-        Citizen.Wait(2000)
+        Citizen.Wait(Config.updateTime)
 		local PlayerPED = PlayerPedId()
 
 		local modelhashed = GetHashKey(Config.defaultPED)

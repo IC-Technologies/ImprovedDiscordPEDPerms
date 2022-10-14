@@ -16,7 +16,9 @@ Config = {
 	InheritanceEnabled = true,
 	-- Set to true if you use the t-notify plugin for notifications.
 	usingTnotify = false,
-	defaultPED = "a_m_y_skater_01"
+	defaultPED = "a_m_y_skater_01",
+	-- How often the script checks for restricted PEDs (in milliseconds)
+	updateTime = 2000
 }
 
 -- This Script uses the nicknames for roles listed in Badger_Discord_API. 

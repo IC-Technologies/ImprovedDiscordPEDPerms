@@ -37,5 +37,5 @@ Config.Inheritances = {
 	['RoleName1'] = {'RoleName2', 'RoleName3', 'RoleName4'},
 	['RoleName2'] = {'RoleName3', 'RoleName4'},
 	['RoleName3'] = {'RoleName4'},
-	['Test1'] = {}
+	['RoleName4'] = {}
 }
